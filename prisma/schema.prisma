@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
+  name      String
+  age       Int
+  city      String?
+  password  String
+  avatar    String?
+  status    Boolean     @default(false)
+  TokenPair TokenPair[]
+}
+
+model TokenPair {
+  id           Int    @id @default(autoincrement())
+  accessToken  String
+  refreshToken String
+  author       User?  @relation(fields: [authorId], references: [id])
+  authorId     Int?
+}
+
+// prisma format  // check
+// npx prisma generate // синхронізація схеми з базою
+// npx prisma migrate dev --name change_post_table --create-only  // add new column to db
+// npx prisma migrate dev --name init
