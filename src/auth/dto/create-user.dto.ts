@@ -18,7 +18,7 @@ export class CreateUserDto {
   @IsString()
   public city: string;
   @IsBoolean()
-  public status: boolean;
+  public status?: boolean;
   @IsString()
   readonly password: string;
 }

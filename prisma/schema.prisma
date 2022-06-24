@@ -18,7 +18,7 @@ model User {
   city      String?
   password  String
   avatar    String?
-  status    Boolean     @default(false)
+  status    Boolean?    @default(false)
   TokenPair TokenPair[]
 }
 
@@ -27,7 +27,7 @@ model TokenPair {
   accessToken  String
   refreshToken String
   author       User?  @relation(fields: [authorId], references: [id])
-  authorId     Int?
+  authorId     Int?   @unique
 }
 
 // prisma format  // check
