@@ -18,7 +18,8 @@ export class JwtGuard implements CanActivate{
                 );
             }
             console.log(accessToken)
-return false
+            console.log(bearer)
+return true
         }catch (e) {
             console.log(e)
         }
