@@ -9,7 +9,7 @@ import {LoginUserDto} from "./dto/login-user.dto";
 export class AuthService {
     constructor(private userService: UserService, private tokenService: TokenService) {
     }
-
+//registration user
     async registration(userDto: CreateUserDto) {
         try {
             const findUser = await this.userService.getUserByEmail(userDto.email);
@@ -28,7 +28,7 @@ export class AuthService {
             return e.message[0]
         }
     }
-
+//login User
     async login(data: LoginUserDto) {
         try {
             const userFromDb = await this._validate(data)
@@ -38,7 +38,7 @@ export class AuthService {
             console.log(e);
         }
     }
-
+//validation User from password
     private async _validate(data: LoginUserDto) {
         try {
             const userFromDb = await this.userService.getUserByEmail(data.email)

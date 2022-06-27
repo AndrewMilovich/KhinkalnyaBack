@@ -7,7 +7,7 @@ import {PrismaService} from "../../core/prisma.service";
 export class TokenService {
     constructor(private jwtService: JwtService, private prismaService: PrismaService) {
     }
-
+//generate token
     async generateToken(user: User) {
         const payload = {email: user.email, id: user.id};
         const [access, refresh] = await Promise.all([
@@ -20,13 +20,13 @@ export class TokenService {
             tokenPair
         };
     }
-
+//save token to BD
     async saveToken(token, id: number): Promise<TokenPair> {
         return this.prismaService.tokenPair.create({
             data: {accessToken: token.access, refreshToken: token.refresh, authorId: id}
         })
     }
-
+//delete token from BD
     async deleteTokenPair(id: number) {
         return this.prismaService.tokenPair.delete({where: {authorId: id}})
     }
