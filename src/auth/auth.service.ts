@@ -1,58 +1,86 @@
-import {HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
-import {CreateUserDto} from './dto/create-user.dto';
-import {UserService} from "../user/user.service";
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
-import {TokenService} from "./token/token.service";
-import {LoginUserDto} from "./dto/login-user.dto";
+import { TokenService } from './token/token.service';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
-    constructor(private userService: UserService, private tokenService: TokenService) {
+  constructor(
+    private userService: UserService,
+    private tokenService: TokenService,
+  ) {}
+  //registration user
+  async registration(userDto: CreateUserDto) {
+    try {
+      const findUser = await this.userService.getUserByEmail(userDto.email);
+      if (findUser) {
+        return new HttpException(
+          'user is already exist',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const hashPass = await bcrypt.hash(userDto.password, 7);
+      const userFromDb = await this.userService.createUser({
+        ...userDto,
+        password: hashPass,
+        age: Number(userDto.age),
+      });
+      return this.tokenService.generateToken(userFromDb);
+    } catch (e) {
+      console.log(e);
+      return e.message[0];
     }
-//registration user
-    async registration(userDto: CreateUserDto) {
-        try {
-            const findUser = await this.userService.getUserByEmail(userDto.email);
-            if (findUser) {
-                return new HttpException('user is already exist', HttpStatus.BAD_REQUEST);
-            }
-            const hashPass = await bcrypt.hash(userDto.password, 7);
-            const userFromDb = await this.userService.createUser({
-                ...userDto,
-                password: hashPass,
-                age: Number(userDto.age)
-            });
-            return this.tokenService.generateToken(userFromDb);
-        } catch (e) {
-            console.log(e);
-            return e.message[0]
-        }
+  }
+  //login User
+  async login(data: LoginUserDto) {
+    try {
+      const userFromDb = await this._validate(data);
+      await this.tokenService.deleteTokenPair(userFromDb.id);
+      return this.tokenService.generateToken(userFromDb);
+    } catch (e) {
+      console.log(e);
     }
-//login User
-    async login(data: LoginUserDto) {
-        try {
-            const userFromDb = await this._validate(data)
-            await this.tokenService.deleteTokenPair(userFromDb.id)
-            return this.tokenService.generateToken(userFromDb)
-        } catch (e) {
-            console.log(e);
-        }
+  }
+  //validation User from password
+  private async _validate(data: LoginUserDto) {
+    try {
+      const userFromDb = await this.userService.getUserByEmail(data.email);
+      const checkPassword = await bcrypt.compare(
+        data.password,
+        userFromDb.password,
+      );
+      if (userFromDb && checkPassword) {
+        return userFromDb;
+      }
+    } catch (e) {
+      new UnauthorizedException(
+        HttpStatus.UNAUTHORIZED,
+        'wrong email or password',
+      );
+      console.log(e);
     }
-//validation User from password
-    private async _validate(data: LoginUserDto) {
-        try {
-            const userFromDb = await this.userService.getUserByEmail(data.email)
-            const checkPassword = await bcrypt.compare(data.password, userFromDb.password)
-            if (userFromDb && checkPassword) {
-                return userFromDb
-            }
-        } catch (e) {
-            new UnauthorizedException(
-                HttpStatus.UNAUTHORIZED,
-                'wrong email or password')
-            console.log(e);
-        }
-
+  }
+  async refresh(refreshToken: string) {
+    try {
+      const tokenPayload = await this.tokenService.verifyToken(refreshToken, 'Refresh');
+      const tokenPairByUserId = await this.tokenService.getTokenPairByUserId(tokenPayload.id);
+      if (!tokenPayload || refreshToken !== tokenPairByUserId.refreshToken) {
+        return new HttpException(
+            'token not valid',
+            HttpStatus.BAD_REQUEST,
+        );
+      }
+      await this.tokenService.deleteTokenPair(tokenPayload.id);
+      return this.tokenService.generateToken(tokenPayload);
+    } catch (e) {
+      console.log(e);
     }
-
+  }
 }

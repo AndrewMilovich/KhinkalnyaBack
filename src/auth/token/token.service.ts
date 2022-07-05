@@ -1,33 +1,53 @@
-import {Injectable} from '@nestjs/common';
-import {User, TokenPair} from "@prisma/client";
-import {JwtService} from "@nestjs/jwt";
-import {PrismaService} from "../../core/prisma.service";
+import { Injectable } from '@nestjs/common';
+import { User, TokenPair } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from '../../core/prisma.service';
 
 @Injectable()
 export class TokenService {
-    constructor(private jwtService: JwtService, private prismaService: PrismaService) {
+  constructor(
+    private jwtService: JwtService,
+    private prismaService: PrismaService,
+  ) {}
+  public verifyToken(token,tokenType='Access'){
+    let secret='Access'
+    if (tokenType==='Refresh'){
+      secret='Refresh'
     }
-//generate token
-    async generateToken(user: User) {
-        const payload = {email: user.email, id: user.id};
-        const [access, refresh] = await Promise.all([
-            this.jwtService.sign(payload, {secret: 'Access', expiresIn: '1d'}),
-            this.jwtService.sign(payload, {secret: 'Refresh', expiresIn: '1h'}),
-        ]);
-        const tokenPair = await this.saveToken({access, refresh}, user.id);
-        return {
-            user,
-            tokenPair
-        };
+    if (tokenType==='Action'){
+      secret='Action'
     }
-//save token to BD
-    async saveToken(token, id: number): Promise<TokenPair> {
-        return this.prismaService.tokenPair.create({
-            data: {accessToken: token.access, refreshToken: token.refresh, authorId: id}
-        })
-    }
-//delete token from BD
-    async deleteTokenPair(id: number) {
-        return this.prismaService.tokenPair.delete({where: {authorId: id}})
-    }
+    return this.jwtService.verify(token,{secret})
+  }
+  //generate token
+  async generateToken(user: User) {
+    const payload = { email: user.email, id: user.id };
+    const [access, refresh] = await Promise.all([
+      this.jwtService.sign(payload, { secret: 'Access', expiresIn: '1d' }),
+      this.jwtService.sign(payload, { secret: 'Refresh', expiresIn: '1h' }),
+    ]);
+    const tokenPair = await this.saveToken({ access, refresh }, user.id);
+    return {
+      user,
+      tokenPair,
+    };
+  }
+  //save token to BD
+  async saveToken(token, id: number): Promise<TokenPair> {
+    return this.prismaService.tokenPair.create({
+      data: {
+        accessToken: token.access,
+        refreshToken: token.refresh,
+        authorId: id,
+      },
+    });
+  }
+  //delete token from BD
+  async deleteTokenPair(id: number) {
+    return this.prismaService.tokenPair.delete({ where: { authorId: id } });
+  }
+  //get token by User
+  async getTokenPairByUserId(id: number) {
+    return this.prismaService.tokenPair.findUnique({ where: { authorId: id } });
+  }
 }
