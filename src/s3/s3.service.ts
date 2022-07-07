@@ -33,7 +33,7 @@ export class S3Service {
                 .fill(null)
                 .map(() => Math.round(Math.random() * 16).toString(16))
                 .join('');
-            return `dish/${randomName}${fileName}`;
+            return `dish/${fileName}/${randomName}${fileName}`;
         } catch (e) {
             console.log(e);
         }

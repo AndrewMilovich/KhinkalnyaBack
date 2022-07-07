@@ -2,6 +2,7 @@ import {Body, Controller, HttpCode, HttpStatus, Post, Req} from '@nestjs/common'
 import {AuthService} from './auth.service';
 import {LoginUserDto} from './dto/login-user.dto';
 import {User} from '@prisma/client';
+import {TokenService} from "./token/token.service";
 
 @Controller('auth')
 export class AuthController {
@@ -18,12 +19,17 @@ export class AuthController {
         return this.authService.login(user);
     }
 
-    @HttpCode(HttpStatus.OK)
-    @Post('refresh')
-    refresh(@Req() request) {
+
+    @Post('logout')
+    logout(@Req() request) {
         const header = request.rawHeaders[1];
-        const refreshToken = header.split(' ')[1];
-        return this.authService.refresh(refreshToken);
+        const accessToken = header.split(' ')[1];
+        return this.authService.logout(accessToken)
     }
 
+    @HttpCode(HttpStatus.OK)
+    @Post('refresh')
+    refresh(@Req() request, @Body() body) {
+        return this.authService.refresh(body.data);
+    }
 }

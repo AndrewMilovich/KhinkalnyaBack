@@ -20,6 +20,7 @@ model User {
   address   String?
   password  String
   phone     String?
+  role      String?    @default("user")
   order     Order[]
   tokenPair TokenPair?
   review    Review[]
@@ -52,7 +53,7 @@ model Dish {
   description   String
   quantity_sold Int?          @default(0)
   locality      Locality?     @relation(fields: [localityId], references: [id])
-  localityId    Int?
+  localityId    Int
   ingredients   Ingredients[]
   order         Order?        @relation(fields: [orderId], references: [id])
   orderId       Int?

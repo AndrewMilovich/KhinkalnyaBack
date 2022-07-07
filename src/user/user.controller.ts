@@ -6,7 +6,7 @@ import { AuthorizedGuard } from '../auth/guards/authorized-guard';
 export class UserController {
   constructor(private userService: UserService) {}
   @Get()
-  @UseGuards(AuthorizedGuard)
+  // @UseGuards(AuthorizedGuard)
   GetUsers() {
     return this.userService.getAll();
   }
