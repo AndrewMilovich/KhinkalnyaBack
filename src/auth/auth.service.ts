@@ -23,7 +23,7 @@ export class AuthService {
         try {
             const findUser = await this.userService.getUserByEmail(userDto.email);
             if (findUser) {
-                return new HttpException(
+                 new HttpException(
                     'user is already exist',
                     HttpStatus.BAD_REQUEST,
                 );
@@ -36,8 +36,7 @@ export class AuthService {
             });
             return this.tokenService.generateToken(userFromDb);
         } catch (e) {
-            console.log(e);
-            return e.message[0];
+          throw new HttpException(e.message,404)
         }
     }
 
@@ -60,13 +59,13 @@ export class AuthService {
 //logout
     async logout(accessToken: string) {
         try {
-            const tokenPayload = this.tokenService.verifyToken(accessToken);
+            const tokenPayload = await this.tokenService.verifyToken(accessToken, 'Access');
             if (!tokenPayload) {
                 throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, 'access token not valid')
             }
-            return this.tokenService.deleteTokenPair(tokenPayload.id)
+            return this.tokenService.deleteTokenPair(tokenPayload.id);
         } catch (e) {
-            console.log(e);
+            throw new HttpException('wrong email or password',403)
         }
     }
 
@@ -82,7 +81,7 @@ export class AuthService {
                 return userFromDb;
             }
         } catch (e) {
-            new UnauthorizedException(
+           new UnauthorizedException(
                 HttpStatus.UNAUTHORIZED,
                 'wrong email or password',
             );

@@ -20,11 +20,11 @@ export class AuthController {
     }
 
 
+    @HttpCode(HttpStatus.OK)
     @Post('logout')
     logout(@Req() request) {
-        const header = request.rawHeaders[1];
-        const accessToken = header.split(' ')[1];
-        return this.authService.logout(accessToken)
+        const accessToken = request.headers.authorization.split(' ')[1];
+        return this.authService.logout(accessToken);
     }
 
     @HttpCode(HttpStatus.OK)

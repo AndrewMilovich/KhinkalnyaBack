@@ -28,16 +28,21 @@ export class TokenService {
 
     //generate token
     async generateToken(user: User) {
-        const payload = {email: user.email, id: user.id, role: user.role};
-        const [access, refresh] = await Promise.all([
-            this.jwtService.sign(payload, {secret: 'Access', expiresIn: '20s'}),
-            this.jwtService.sign(payload, {secret: 'Refresh', expiresIn: '1d'}),
-        ]);
-        const tokenPair = await this.saveToken({access, refresh}, user.id);
-        return {
-            user,
-            tokenPair,
-        };
+        try {
+            const payload = {email: user.email, id: user.id, role: user.role};
+            const [access, refresh] = await Promise.all([
+                this.jwtService.sign(payload, {secret: 'Access', expiresIn: '2d'}),
+                this.jwtService.sign(payload, {secret: 'Refresh', expiresIn: '1d'}),
+            ]);
+            const tokenPair = await this.saveToken({access, refresh}, user.id);
+            return {
+                user,
+                tokenPair,
+            };
+        }catch (e) {
+            console.log(e);
+        }
+
     }
 
     //save token to BD
@@ -66,7 +71,6 @@ export class TokenService {
 
     //get token by User
     async getTokenPairByUserId(id: number) {
-
         try {
             if (!id) {
                 throw new Error('invalid id...')
