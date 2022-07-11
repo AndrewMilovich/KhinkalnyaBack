@@ -18,4 +18,4 @@ ALTER COLUMN "localityId" DROP NOT NULL;
 DROP TABLE "_DishToLocality";
 
 -- AddForeignKey
-ALTER TABLE "Dish" ADD CONSTRAINT "Dish_localityId_fkey" FOREIGN KEY ("localityId") REFERENCES "Locality"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Dish" ADD CONSTRAINT "Dish_localityId_fkey" FOREIGN KEY ("localityId") REFERENCES "AddLocality"("id") ON DELETE SET NULL ON UPDATE CASCADE;

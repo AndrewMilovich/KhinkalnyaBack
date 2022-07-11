@@ -45,7 +45,7 @@ CREATE TABLE "Dish" (
 );
 
 -- CreateTable
-CREATE TABLE "Locality" (
+CREATE TABLE "AddLocality" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
 
@@ -112,4 +112,4 @@ ALTER TABLE "Review" ADD CONSTRAINT "Review_restaurantId_fkey" FOREIGN KEY ("res
 ALTER TABLE "_DishToLocality" ADD CONSTRAINT "_DishToLocality_A_fkey" FOREIGN KEY ("A") REFERENCES "Dish"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_DishToLocality" ADD CONSTRAINT "_DishToLocality_B_fkey" FOREIGN KEY ("B") REFERENCES "Locality"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_DishToLocality" ADD CONSTRAINT "_DishToLocality_B_fkey" FOREIGN KEY ("B") REFERENCES "AddLocality"("id") ON DELETE CASCADE ON UPDATE CASCADE;

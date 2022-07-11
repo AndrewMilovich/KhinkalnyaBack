@@ -23,7 +23,7 @@ export class AuthService {
         try {
             const findUser = await this.userService.getUserByEmail(userDto.email);
             if (findUser) {
-                 new HttpException(
+                throw new HttpException(
                     'user is already exist',
                     HttpStatus.BAD_REQUEST,
                 );
@@ -36,7 +36,7 @@ export class AuthService {
             });
             return this.tokenService.generateToken(userFromDb);
         } catch (e) {
-          throw new HttpException(e.message,404)
+            throw new HttpException(e.message, 404)
         }
     }
 
@@ -52,7 +52,7 @@ export class AuthService {
             }
             return this.tokenService.generateToken(userFromDb);
         } catch (e) {
-            console.log(e);
+            throw new HttpException('wrong email or password', 401)
         }
     }
 
@@ -65,7 +65,7 @@ export class AuthService {
             }
             return this.tokenService.deleteTokenPair(tokenPayload.id);
         } catch (e) {
-            throw new HttpException('wrong email or password',403)
+            throw new HttpException('token not valid', 402)
         }
     }
 
@@ -73,19 +73,22 @@ export class AuthService {
     private async _validate(data: LoginUserDto) {
         try {
             const userFromDb = await this.userService.getUserByEmail(data.email);
+            if (userFromDb === null) {
+                throw new HttpException('wrong email or  password', 402)
+            }
             const checkPassword = await bcrypt.compare(
                 data.password,
                 userFromDb.password,
             );
             if (userFromDb && checkPassword) {
                 return userFromDb;
+            }else
+            {
+                throw new HttpException('wrong password', 402)
             }
         } catch (e) {
-           new UnauthorizedException(
-                HttpStatus.UNAUTHORIZED,
-                'wrong email or password',
-            );
-            console.log(e);
+            throw new HttpException('wrong email or  password', 402)
+
         }
     }
 
@@ -96,15 +99,12 @@ export class AuthService {
             console.log(tokenPayload)
             const tokenPairByUserId = await this.tokenService.getTokenPairByUserId(tokenPayload.id);
             if (!tokenPayload || refreshToken !== tokenPairByUserId.refreshToken) {
-                return new HttpException(
-                    'token not valid',
-                    HttpStatus.BAD_REQUEST,
-                );
+                throw new HttpException('token not valid', 402)
             }
             await this.tokenService.deleteTokenPair(tokenPayload.id);
             return this.tokenService.generateToken(tokenPayload);
         } catch (e) {
-            console.log(e);
+            throw new HttpException('token not valid', 402)
         }
     }
 }

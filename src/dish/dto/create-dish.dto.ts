@@ -1,12 +1,12 @@
-export interface CreateDishDto {
+export class CreateDishDto {
     image: string;
     name: string;
     price: number;
     weight: number;
     description: string;
-    localityId?:number;
+    localityId?: number;
     quantity_sold?: number;
     ingredients?: [];
     order?: []
-    Restaurant?:string;
+    restaurantId?: number;
 }

@@ -1,6 +1,6 @@
 import {HttpException, Injectable} from '@nestjs/common';
 import { PrismaService } from '../core/prisma.service';
-import { User,Locality } from '@prisma/client';
+import { User } from '@prisma/client';
 import { CreateUserDto } from '../auth/dto/create-user.dto';
 
 @Injectable()
@@ -20,14 +20,14 @@ export class UserService {
     try {
       const findFirst = await this.prismaService.user.findFirst({ where: { email: userEmail } });
       if (findFirst===null){
-        throw new HttpException('wrong password or email',404)
+        throw new HttpException('wrong password or email',402)
       }
       if (findFirst.email===userEmail){
         return this.prismaService.user.findFirst({ where: { email: userEmail } });
       }
 
     }catch (e) {
-      throw new HttpException('wrong password or email',404)
+      throw new HttpException('wrong password or email',402)
     }
   }
 

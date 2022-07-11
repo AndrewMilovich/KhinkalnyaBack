@@ -18,7 +18,8 @@ export class DishService {
                     image: img.Location,
                     price: Number(dish.price),
                     weight: Number(dish.weight),
-                    localityId: Number(dish.localityId)
+                    localityId: Number(dish.localityId),
+                    restaurantId: Number(dish.restaurantId)
                 }
             })
         }
@@ -28,7 +29,8 @@ export class DishService {
                 image: '',
                 price: Number(dish.price),
                 weight: Number(dish.weight),
-                localityId: Number(dish.localityId)
+                localityId: Number(dish.localityId),
+                restaurantId: Number(dish.restaurantId)
             }
         })
     }
@@ -37,7 +39,5 @@ export class DishService {
         return this.prismaService.dish.findMany()
     }
 
-    async getLocality(): Promise<Locality[]> {
-        return this.prismaService.locality.findMany({include: {Dish: true}});
-    }
+
 }

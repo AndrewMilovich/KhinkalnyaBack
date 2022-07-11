@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, Injectable} from '@nestjs/common';
 import {User, TokenPair} from '@prisma/client';
 import {JwtService} from '@nestjs/jwt';
 import {PrismaService} from '../../core/prisma.service';
@@ -22,7 +22,7 @@ export class TokenService {
             }
             return this.jwtService.verify(token, {secret: secret})
         } catch (e) {
-            return e.message;
+            throw new HttpException('invalid token type',401)
         }
     }
 
@@ -39,8 +39,8 @@ export class TokenService {
                 user,
                 tokenPair,
             };
-        }catch (e) {
-            console.log(e);
+        } catch (e) {
+            throw new HttpException('not valid email or password',401)
         }
 
     }
@@ -60,11 +60,11 @@ export class TokenService {
     async deleteTokenPair(id: number) {
         try {
             if (!id) {
-                throw new Error('invalid id...')
+                throw new HttpException('invalid id...', 401)
             }
             return this.prismaService.tokenPair.delete({where: {authorId: id}});
         } catch (e) {
-            return e.message
+            throw new HttpException('invalid id...', 401)
         }
 
     }
@@ -73,11 +73,11 @@ export class TokenService {
     async getTokenPairByUserId(id: number) {
         try {
             if (!id) {
-                throw new Error('invalid id...')
+                throw new HttpException('invalid id...', 401)
             }
             return this.prismaService.tokenPair.findUnique({where: {authorId: id}});
         } catch (e) {
-            return e.message
+            throw new HttpException('invalid id...', 401)
         }
     }
 }

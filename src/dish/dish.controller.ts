@@ -18,8 +18,4 @@ constructor(private prismaService:PrismaService,private dishService:DishService)
     addDish(@UploadedFile() file, @Body() dish: Dish) {
         return this.dishService.createDish(dish,file);
     }
-    @Get('locality')
-    GetLocality(){
-        return this.dishService.getLocality();
-    }
 }

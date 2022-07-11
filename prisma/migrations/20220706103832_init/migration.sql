@@ -13,4 +13,4 @@ ALTER COLUMN "quantity_sold" SET DEFAULT 0,
 ALTER COLUMN "localityId" SET NOT NULL;
 
 -- AddForeignKey
-ALTER TABLE "Dish" ADD CONSTRAINT "Dish_localityId_fkey" FOREIGN KEY ("localityId") REFERENCES "Locality"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Dish" ADD CONSTRAINT "Dish_localityId_fkey" FOREIGN KEY ("localityId") REFERENCES "AddLocality"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

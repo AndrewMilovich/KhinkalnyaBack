@@ -10,9 +10,11 @@ import { S3Module } from './s3/s3.module';
 import {AccessTokenMiddleware} from "./auth/middleware/access-token.middleware";
 import {JwtModule, JwtService} from "@nestjs/jwt";
 import {TokenService} from "./auth/token/token.service";
+import { LocalityModule } from './locality/locality.module';
+import { RestaurantModule } from './restaurant/restaurant.module';
 
 @Module({
-  imports: [AuthModule, UserModule, AdminModule, DishModule, S3Module,JwtModule],
+  imports: [AuthModule, UserModule, AdminModule, DishModule, S3Module,JwtModule, LocalityModule, RestaurantModule],
   controllers: [AppController],
   providers: [AppService, PrismaService,TokenService,JwtService],
 })
