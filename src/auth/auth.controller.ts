@@ -2,6 +2,7 @@ import {Body, Controller, HttpCode, HttpStatus, Post, Req} from '@nestjs/common'
 import {AuthService} from './auth.service';
 import {LoginUserDto} from './dto/login-user.dto';
 import {User} from '@prisma/client';
+import {CreateUserDto} from "./dto/create-user.dto";
 
 @Controller('auth')
 export class AuthController {
@@ -10,6 +11,7 @@ export class AuthController {
 
     @Post('registration')
     registration(@Body() user: User) {
+        console.log(user)
         return this.authService.registration(user);
     }
 

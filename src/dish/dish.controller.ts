@@ -1,21 +1,31 @@
-import {Body, Controller, Get, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
-import {PrismaService} from "../core/prisma.service";
+import {Body, Controller, Get, Param, Post, Put, UploadedFile, UseInterceptors} from '@nestjs/common';
 import {DishService} from "./dish.service";
-import {CreateDishDto} from "./dto/create-dish.dto";
 import {Dish} from "@prisma/client";
 import {FileInterceptor} from "@nestjs/platform-express";
 
 @Controller('dish')
 export class DishController {
-constructor(private prismaService:PrismaService,private dishService:DishService) {
-}
+    constructor(private dishService: DishService) {
+    }
+
     @Get()
-    GetAllDishes(){
+    GetAllDishes() {
         return this.dishService.getAllDishes()
     }
+
     @Post()
     @UseInterceptors(FileInterceptor('image'))
     addDish(@UploadedFile() file, @Body() dish: Dish) {
-        return this.dishService.createDish(dish,file);
+        return this.dishService.createDish(dish, file);
+    }
+
+    @Put('id')
+    updateDishById(@Param() id, @Body() dish: Partial<Dish>) {
+        return this.dishService.updateDishById(id, dish)
+    }
+
+    @Get('locality/:id')
+    getDishByLocality(@Param('id') id:string) {
+        return this.dishService.dishByLocalityId(id)
     }
 }

@@ -4,7 +4,7 @@ export class CreateDishDto {
     price: number;
     weight: number;
     description: string;
-    localityId?: number;
+    localityId?: number | null |never;
     quantity_sold?: number;
     ingredients?: [];
     order?: []

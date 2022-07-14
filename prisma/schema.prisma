@@ -24,6 +24,7 @@ model User {
   order     Order[]
   tokenPair TokenPair?
   review    Review[]
+  createdAt DateTime   @default(now())
 }
 
 model Restaurant {
@@ -41,7 +42,7 @@ model Order {
   restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
   restaurantId Int?
   dish         Dish[]
-  createdAt    DateTime
+  createdAt    DateTime    @default(now())
 }
 
 model Dish {
@@ -62,9 +63,10 @@ model Dish {
 }
 
 model Locality {
-  id   Int    @id @default(autoincrement())
-  name String
-  Dish Dish[]
+  id    Int     @id @default(autoincrement())
+  image String?
+  name  String
+  Dish  Dish[]
 }
 
 model Ingredients {

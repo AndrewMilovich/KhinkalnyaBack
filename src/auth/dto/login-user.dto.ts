@@ -12,5 +12,5 @@ export class LoginUserDto {
   @IsString()
   @Length(2, 20)
   @IsNotEmpty()
-  readonly password: string;
+  public password: string;
 }

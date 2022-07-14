@@ -1,3 +1,4 @@
-export class CreateLocalityDto{
-    name:string
+export class CreateLocalityDto {
+    name: string;
+    image: string;
 }

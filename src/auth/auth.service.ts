@@ -9,6 +9,7 @@ import {UserService} from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import {TokenService} from './token/token.service';
 import {LoginUserDto} from './dto/login-user.dto';
+import {User} from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -19,24 +20,27 @@ export class AuthService {
     }
 
     //registration user
-    async registration(userDto: CreateUserDto) {
+    async registration(data: CreateUserDto) {
         try {
-            const findUser = await this.userService.getUserByEmail(userDto.email);
-            if (findUser) {
-                throw new HttpException(
+            const user = await this.userService.getUserByEmail(data.email);
+
+            if (user) {
+                return new HttpException(
                     'user is already exist',
                     HttpStatus.BAD_REQUEST,
                 );
             }
-            const hashPass = await bcrypt.hash(userDto.password, 7);
-            const userFromDb = await this.userService.createUser({
-                ...userDto,
-                password: hashPass,
-                age: Number(userDto.age),
+            const hashPassword = await bcrypt.hash(data.password, 10);
+            const savedUser = await this.userService.createUser({
+                ...data,
+                age: Number(data.age),
+                password: hashPassword,
             });
-            return this.tokenService.generateToken(userFromDb);
+
+            return this.tokenService.generateToken(savedUser);
         } catch (e) {
-            throw new HttpException(e.message, 404)
+            console.log(e.message);
+            return e.message[0];
         }
     }
 
@@ -44,15 +48,24 @@ export class AuthService {
     async login(data: LoginUserDto) {
         try {
             const userFromDb = await this._validate(data);
+            if (!userFromDb) {
+                throw new UnauthorizedException(
+                    HttpStatus.UNAUTHORIZED,
+                    'wrong email or password',
+                );
+            }
+
             if (userFromDb) {
-                const tokenPairFromDb = await this.tokenService.getTokenPairByUserId(userFromDb.id);
+                const tokenPairFromDb = await this.tokenService.getTokenPairByUserId(
+                    userFromDb.id,
+                );
                 if (tokenPairFromDb) {
                     await this.tokenService.deleteTokenPair(userFromDb.id);
                 }
+                return this.tokenService.generateToken(userFromDb);
             }
-            return this.tokenService.generateToken(userFromDb);
         } catch (e) {
-            throw new HttpException('wrong email or password', 401)
+            throw new HttpException(e.message, 404);
         }
     }
 
@@ -73,24 +86,19 @@ export class AuthService {
     private async _validate(data: LoginUserDto) {
         try {
             const userFromDb = await this.userService.getUserByEmail(data.email);
-            if (userFromDb === null) {
-                throw new HttpException('wrong email or  password', 402)
-            }
             const checkPassword = await bcrypt.compare(
                 data.password,
                 userFromDb.password,
             );
             if (userFromDb && checkPassword) {
                 return userFromDb;
-            }else
-            {
-                throw new HttpException('wrong password', 402)
             }
+            throw new HttpException('wrong email or password', 404);
         } catch (e) {
-            throw new HttpException('wrong email or  password', 402)
-
+            throw new HttpException(e.message, 404);
         }
     }
+
 
     async refresh(refreshToken: string) {
 
