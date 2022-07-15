@@ -9,7 +9,7 @@ export class UserService {
     }
 
     async getAll(): Promise<User[]> {
-        return this.prismaService.user.findMany();
+        return this.prismaService.user.findMany({include:{_count:{select:{order:true}}}});
     }
 
     getUsersById(id: string): Promise<User> {
