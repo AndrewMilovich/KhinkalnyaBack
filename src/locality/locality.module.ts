@@ -8,4 +8,7 @@ import {S3Service} from "../s3/s3.service";
   controllers: [LocalityController],
   providers: [LocalityService,PrismaService,S3Service]
 })
-export class LocalityModule {}
+export class LocalityModule {
+
+
+}

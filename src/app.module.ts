@@ -12,9 +12,10 @@ import {JwtModule, JwtService} from "@nestjs/jwt";
 import {TokenService} from "./auth/token/token.service";
 import { LocalityModule } from './locality/locality.module';
 import { RestaurantModule } from './restaurant/restaurant.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
-  imports: [AuthModule, UserModule, AdminModule, DishModule, S3Module,JwtModule, LocalityModule, RestaurantModule],
+  imports: [AuthModule, UserModule, AdminModule, DishModule, S3Module,JwtModule, LocalityModule, RestaurantModule, OrderModule],
   controllers: [AppController],
   providers: [AppService, PrismaService,TokenService,JwtService],
 })
@@ -22,6 +23,6 @@ export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer): any {
     consumer
         .apply(AccessTokenMiddleware)
-        .forRoutes('user');
+        .forRoutes('use');
   }
 }

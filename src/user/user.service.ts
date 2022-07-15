@@ -9,7 +9,7 @@ export class UserService {
     }
 
     async getAll(): Promise<User[]> {
-        return this.prismaService.user.findMany({include: {order: true}});
+        return this.prismaService.user.findMany();
     }
 
     getUsersById(id: string): Promise<User> {
@@ -19,7 +19,7 @@ export class UserService {
     }
 
     async getUserByEmail(email: string): Promise<User> {
-        return this.prismaService.user.findUnique({ where: { email: email } });
+        return this.prismaService.user.findUnique({where: {email: email}});
     }
 
     async createUser(user: CreateUserDto): Promise<User> {
@@ -29,4 +29,17 @@ export class UserService {
     deleteUserById(id: string): void {
         this.prismaService.user.delete({where: {id: Number(id)}});
     }
+
+    // async getAllAt() {
+    //     const groupBy = await this.prismaService.user.groupBy({
+    //         by: ['createdAt'],
+    //         where: {
+    //             createdAt: {
+    //                 equals: new Date().getMonth().toString()
+    //             },
+    //         },
+    //     })
+    //     console.log(groupBy)
+    //     return groupBy
+    // }
 }

@@ -41,7 +41,9 @@ export class DishService {
     public async updateDishById(id: string, data: Partial<Dish>): Promise<Dish> {
         return this.prismaService.dish.update({where: {id: Number(id)}, data: data})
     }
-
+    public async getDishById(id: string): Promise<Dish> {
+        return this.prismaService.dish.findUnique({where: {id: Number(id)}})
+    }
     public async dishByLocalityId(id: string): Promise<Dish[]> {
         return this.prismaService.dish.findMany({where: {localityId: Number(id)}})
     }
